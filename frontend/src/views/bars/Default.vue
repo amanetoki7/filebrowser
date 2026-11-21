@@ -8,17 +8,7 @@
       :disabled="isDisabledMultiAction"
       @action="multiAction"
     />
-    <div class="search-bar-container"
-         v-if="showSearch && !isSearchActive" @click="openSearch" >
-      <i class="material-symbols">search</i>
-      <input
-        type="text"
-        id="search-bar-input"
-        :placeholder="$t('general.search', { suffix: '...' })"
-        readonly
-      />
-    </div>
-    <title v-if="!showSearch" class="topTitle">{{ getTopTitle }}</title>
+    <title class="topTitle">{{ getTopTitle }}</title>
     <action
       v-if="showHeaderSwitchView && !disableNavButtons"
       class="menu-button"

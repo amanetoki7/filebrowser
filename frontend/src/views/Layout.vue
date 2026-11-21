@@ -117,7 +117,7 @@ export default {
       return !!state.req?.type && state.req.type !== "directory" && getters.isPreviewView();
     },
     showSearch() {
-      return getters.isLoggedIn() && getters.currentView() === "listingView" && !getters.isShare();
+      return getters.isLoggedIn() && (getters.currentView() === "listingView" || getters.isPreviewView()) && !getters.isShare();
     },
     isOnlyOffice() {
       return getters.currentView() === "onlyOfficeEditor";

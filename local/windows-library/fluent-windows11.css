@@ -182,3 +182,22 @@ html.dark-mode #sidebar { --navigation-highlight: #323232; }
 
 /* Hide the source-card status indicator. */
 #sidebar .source-card-container .realtime-pulse { display: none !important; }
+
+/* Windows Explorer address and search controls share one row. */
+#shelf .explorer-address-row { display: flex; align-items: stretch; gap: 12px; height: 48px; margin-bottom: 8px; min-width: 0; }
+#shelf .explorer-address-row #breadcrumbs { flex: 1 1 0; min-width: 0; background: var(--surfacePrimary); border-radius: 6px; }
+#shelf .explorer-address-row #breadcrumbs ul { height: 100%; align-items: center; margin: 0; padding: 0 10px; }
+#shelf .explorer-address-row #breadcrumbs li { display: flex; align-items: center; flex-shrink: 0; }
+#shelf .explorer-address-row #breadcrumbs li + li::before { content: '\203A'; color: var(--textSecondary); font-size: 24px; margin: 0 10px; }
+#shelf .explorer-address-row #breadcrumbs li a { box-sizing: border-box; height: 36px; padding: 0 8px; margin: 0; clip-path: none; border: none; border-radius: 4px; font-size: 14px; }
+#shelf .explorer-address-row #breadcrumbs li a::before, #shelf .explorer-address-row #breadcrumbs li a::after { display: none; }
+#shelf .explorer-search-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex: 0 1 29%; min-width: 180px; padding: 0 16px; margin: 0; border: none; border-radius: 6px; background: var(--surfacePrimary); color: var(--textSecondary); cursor: text; text-align: left; font-size: 14px; box-shadow: none; }
+#shelf .explorer-search-bar span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#shelf .explorer-search-bar i { font-size: 20px; color: var(--textPrimary); }
+#shelf .explorer-search-bar:hover { background: var(--surfaceSecondary); }
+@media (max-width: 600px) {
+  #shelf .explorer-address-row { gap: 8px; }
+  #shelf .explorer-search-bar { flex-basis: 38%; min-width: 100px; padding: 0 10px; gap: 4px; font-size: 12px; }
+  #shelf .explorer-address-row #breadcrumbs ul { padding: 0 4px; }
+  #shelf .explorer-address-row #breadcrumbs li + li::before { margin: 0 3px; }
+}

@@ -6,7 +6,13 @@
       :class="{ 'add-padding': addPadding }"
       :style="moveWithSidebar"
     >
-      <breadcrumbs v-if="showBreadcrumbs" :base="isShare ? `/share/${shareHash}` : undefined" />
+      <div v-if="showBreadcrumbs" class="explorer-address-row">
+        <breadcrumbs :base="isShare ? `/share/${shareHash}` : undefined" />
+        <button v-if="!isShare" type="button" class="explorer-search-bar" @click="openExplorerSearch" :aria-label="searchPlaceholder">
+          <span>{{ searchPlaceholder }}</span>
+          <i class="material-symbols" aria-hidden="true">search</i>
+        </button>
+      </div>
       <listing-header v-if="showListingHeader" :hasDuration="hasDuration" />
       <duplicate-finder-actions
         v-if="showDuplicateFinderActions"
@@ -23,7 +29,7 @@
 import Breadcrumbs from "@/components/files/Breadcrumbs.vue";
 import ListingHeader from "@/components/files/ListingHeader.vue";
 import DuplicateFinderActions from "@/components/tools/DuplicateFinderActions.vue";
-import { getters, state } from "@/store";
+import { getters, state, mutations } from "@/store";
 import { eventBus } from "@/store/eventBus";
 
 export default {
@@ -45,6 +51,10 @@ export default {
     };
   },
   computed: {
+    searchPlaceholder() {
+      const folder = state.req.type === 'directory' && state.req.path !== '/' ? state.req.name : this.$t('general.home', { suffix: '' });
+      return `${folder}\u306e\u691c\u7d22`;
+    },
     addPadding() {
       return getters.isStickySidebar() || getters.isShare();
     },
@@ -120,6 +130,16 @@ export default {
     },
   },
   methods: {
+    openExplorerSearch() {
+      if (state.isSearchActive || getters.currentPromptName()) return;
+      mutations.closeHovers();
+      mutations.resetSelected();
+      mutations.setSearch(true);
+      this.$nextTick(() => {
+        document.getElementById('result-list')?.classList.add('active');
+        document.getElementById('search-input')?.focus();
+      });
+    },
     attachScrollListener() {
       // Try to find the scroll wrapper (used by Scrollbar component)
       const scrollWrapper = document.querySelector('.scroll-wrapper');
