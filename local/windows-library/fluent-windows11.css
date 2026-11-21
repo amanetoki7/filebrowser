@@ -105,3 +105,9 @@ input[type='range'] { accent-color: var(--fluent-accent); }
 #main [data-dir='true'] .image-preview, #sidebar .node-icon .image-preview { background: transparent !important; border-radius: 4px; }
 #main .listing-item .name { font-weight: 400; }
 #main .folder-items, #main .file-items { box-shadow: none; }
+
+/* Explorer column background. */
+html:not(.dark-mode) #main { --explorer-background: #ffffff; }
+html.dark-mode #main { --explorer-background: #191919; }
+#main { background: var(--explorer-background); }
+#main .explorer-area, #main .listing-view-root, #main .listing-items, #main #previewer { background-color: var(--explorer-background); }
