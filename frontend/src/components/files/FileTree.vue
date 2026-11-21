@@ -29,7 +29,7 @@
         >
           <!-- Expand/collapse arrow (only for folders) -->
           <span
-            v-if="node.isDir"
+            v-if="node.isDir && (node.childrenCount > 0 || node.childrenError)"
             class="expand-icon"
             @click.stop.prevent="toggleExpand(node, true)"
           >
@@ -57,10 +57,6 @@
           :shareHash="shareHash"
           :currentPath="currentPath"
         />
-        <div v-else-if="node.expanded && node.children && node.children.length === 0" class="tree-empty-folder">
-          <i class="material-symbols-outlined">sentiment_dissatisfied</i>
-          <span>{{ $t('files.lonely') }}</span>
-        </div>
         <div v-else-if="node.expanded && node.loading" class="tree-loading">
           <LoadingSpinner size="small" mode="placeholder" />
         </div>
@@ -69,11 +65,6 @@
         </div>
       </li>
     </ul>
-    <!-- Empty state -->
-    <div v-if="isRootInstance && effectiveNodes && effectiveNodes.length === 0 && !loading && !error" class="tree-empty">
-      <i class="material-symbols-outlined">sentiment_dissatisfied</i>
-      {{ $t('files.lonely') }}
-    </div>
   </div>
 </template>
 
@@ -190,6 +181,7 @@ async function loadRoot() {
   try {
     const items = await fetchItems(props.rootPath);
     rootNodes.value = items.map(item => createNode(item));
+    void primeChildHints(rootNodes.value);
     rootLoaded.value = true;
   } catch (err) {
     console.error('Failed to load tree root:', err);
@@ -254,26 +246,53 @@ async function toggleExpand(node: TreeNode, skipNavigate = false) {
   // Immediately expand and show loading state
   node.expanded = true;
 
-  // Load children if not loaded
-  if (!node.children) {
-    node.loading = true;
-    node.childrenError = null;
-    try {
-      const items = await fetchItems(node.path);
-      node.children = items.map(item => createNode(item));
-      node.childrenCount = node.children.length;
-    } catch (err) {
-      console.error('Failed to load children for', node.path, err);
-      node.children = [];
-      node.childrenCount = 0;
-      node.childrenError = (err as Error).message || 'Failed to load';
-    } finally {
-      node.loading = false;
-    }
-  }
+  await loadNodeChildren(node);
+  if (!node.childrenCount && !node.childrenError) node.expanded = false;
+  if (node.children?.length) void primeChildHints(node.children);
 
   if (!skipNavigate && node.path !== props.currentPath) {
     navigateTo(node);
+  }
+}
+
+const childRequests = new WeakMap<TreeNode, Promise<void>>();
+
+function loadNodeChildren(node: TreeNode, scope = captureScope()): Promise<void> | undefined {
+  if (node.children !== null) return;
+  const pending = childRequests.get(node);
+  if (pending) return pending;
+  node.loading = true;
+  node.childrenError = null;
+  const request = fetchItems(node.path, scope).then((items) => {
+    if (!isCurrentScope(scope)) return;
+    node.children = items.map(item => createNode(item));
+    node.childrenCount = node.children.length;
+  }).catch((err) => {
+    if (isCurrentScope(scope)) node.childrenError = (err as Error).message || 'Failed to load';
+  }).finally(() => {
+    node.loading = false;
+    childRequests.delete(node);
+  });
+  childRequests.set(node, request);
+  return request;
+}
+
+async function primeChildHints(nodes: TreeNode[]) {
+  const scope = captureScope();
+  const pending = nodes.filter(node => node.isDir && node.children === null);
+  const queue = pending.values();
+  await Promise.all(Array.from({ length: Math.min(4, pending.length) }, async () => {
+    for (const node of queue) {
+      if (!isCurrentScope(scope)) return;
+      await loadNodeChildren(node, scope);
+    }
+  }));
+}
+
+function primeVisibleHints(nodes: TreeNode[]) {
+  void primeChildHints(nodes);
+  for (const node of nodes) {
+    if (node.expanded && node.children) primeVisibleHints(node.children);
   }
 }
 
@@ -429,6 +448,7 @@ async function refresh() {
       rootNodes.value = nodes;
     }
     error.value = null;
+    primeVisibleHints(rootNodes.value);
     rootLoaded.value = true;
     void tryExpandNodes();
   } catch (err) {
@@ -953,32 +973,6 @@ onBeforeUnmount(() => {
 .tree-error.small {
   padding: 0.5em;
   font-size: 0.9em;
-}
-
-.tree-empty {
-  padding: 0.5em;
-  text-align: center;
-  color: var(--textSecondary);
-  font-style: italic;
-}
-
-.tree-empty-folder {
-  display: flex;
-  align-items: center;
-  gap: 0.3em;
-  padding: 0.5em 1em;
-  margin-left: 1.2em;
-  color: var(--textSecondary);
-  font-style: italic;
-  font-size: 0.9em;
-}
-
-.tree-empty-folder i {
-  font-size: 1.4em;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  height: 1em;
 }
 
 </style>
