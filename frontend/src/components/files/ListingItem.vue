@@ -380,7 +380,11 @@ export default {
         : getHumanReadableFilesize(this.size);
     },
     formattedTime() {
-      return getters.getTime(this.modified);
+      const date = new Date(this.modified);
+      if (Number.isNaN(date.getTime())) return '';
+      const pad = (value) => String(value).padStart(2, '0');
+      const weekdays = ['\u65e5', '\u6708', '\u706b', '\u6c34', '\u6728', '\u91d1', '\u571f'];
+      return `${pad(date.getFullYear() % 100)}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} (${weekdays[date.getDay()]}) ${date.getHours()}:${pad(date.getMinutes())}`;
     },
     formattedCreatedTime() {
       if (!this.created) return "";
