@@ -227,8 +227,7 @@ function getSidebarWidth() {
 }
 
 function getSidebarMode() {
-  const savedMode = localStorage.getItem('sidebarMode');
-  return savedMode === 'navigation' ? 'navigation' : 'links'; // default 'links'
+  return 'navigation';
 }
 
 function stickyStartup() {

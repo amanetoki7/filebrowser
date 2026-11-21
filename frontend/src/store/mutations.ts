@@ -1447,8 +1447,8 @@ export const mutations = {
     state.sidebar.isResizing = value;
     emitStateChanged();
   },
-  setSidebarMode(value: string) {
-    const newMode = value === 'navigation' ? 'navigation' : 'links';
+  setSidebarMode(_value: string) {
+    const newMode = 'navigation';
     if (newMode === state.sidebar.mode) return;
     state.sidebar.mode = newMode;
     localStorage.setItem('sidebarMode', newMode);

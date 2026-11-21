@@ -7,28 +7,11 @@
       <i :class="{ 'disabled': !isLoggedIn }"
         aria-label="Navigate Home"
         @click="goHome()" class="material-symbols action">home</i>
-      <span
-        class="sidebar-mode-toggle-wrap item"
-        @mouseenter="showTooltip($event, $t('sidebar.switchMode'))"
-        @mouseleave="hideTooltip"
-      >
-        <ToggleSwitch
-          class="sidebar-mode-toggle"
-          variant="neutral"
-          :model-value="mode === 'navigation'"
-          off-icon="format_list_bulleted"
-          on-icon="link"
-          :name="$t('general.links')"
-          :aria-label="$t('sidebar.switchMode')"
-          @update:model-value="onSidebarModeToggle"
-        />
-      </span>
+      <span class="mode-toggle">{{ $t("general.navigation") }}</span>
       <i v-if="isShare" aria-label="Edit Share" @mouseenter="showTooltip($event, editShareText)" @mouseleave="hideTooltip"
         :class="{ 'disabled': !canEdit }"
         @click="showEditShareHover" class="material-symbols action">edit</i>
-      <i v-else @mouseenter="showTooltip($event, $t('sidebar.customizeLinks'))" @mouseleave="hideTooltip"
-        aria-label="Edit Links"
-        @click="openSidebarLinksPrompt" class="material-symbols action">edit</i>
+
     </div>
     <!-- Source switcher only in navigation mode and when multiple sources exist (hidden in shares).
          Kept outside the scrollable content area so it does not scroll horizontally with the folder tree. -->
@@ -179,7 +162,6 @@ import { showShareDownloadPrompt } from "@/utils/download.js";
 import ShareInfo from "@/components/files/ShareInfo.vue";
 import FileTree from '@/components/files/FileTree.vue';
 import ExpandDropdown from "@/components/settings/ExpandDropdown.vue";
-import ToggleSwitch from "@/components/settings/ToggleSwitch.vue";
 export default {
   name: "SidebarLinks",
   components: {
@@ -188,7 +170,6 @@ export default {
     ShareInfo,
     FileTree,
     ExpandDropdown,
-    ToggleSwitch,
   },
   data() {
     return {
@@ -640,9 +621,6 @@ export default {
         console.error("Failed to open edit share dialog:", err);
       }
     },
-    onSidebarModeToggle(isNavigation) {
-      mutations.setSidebarMode(isNavigation ? "navigation" : "links");
-    },
     navigateToSource(sourceName) {
       if (!sourceName || sourceName === this.activeSource) {
         return;
@@ -680,24 +658,8 @@ export default {
   background: var(--surfaceSecondary);
 }
 
-.sidebar-links-header .sidebar-mode-toggle-wrap {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  min-width: 0;
-  max-width: 100%;
-  margin: 0 0.25em;
-}
 
-.sidebar-links-header :deep(.sidebar-mode-toggle) {
-  width: auto;
-}
 
-.sidebar-links-header :deep(.sidebar-mode-toggle .toggle-row--icon-mode) {
-  width: auto;
-}
 
 .sidebar-links-content {
   flex: 1;
