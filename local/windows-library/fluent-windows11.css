@@ -179,3 +179,6 @@ html.dark-mode #sidebar { --navigation-highlight: #323232; }
   transition: none !important;
 }
 #sidebar .tooltip-info-icon { display: none !important; pointer-events: none !important; }
+
+/* Hide the source-card status indicator. */
+#sidebar .source-card-container .realtime-pulse { display: none !important; }
