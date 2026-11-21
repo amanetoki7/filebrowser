@@ -8,7 +8,7 @@ server:
         defaultEnabled: true
         readOnly: true
 auth:
-  adminUsername: admin
+  adminUsername: 雨音とき
   methods:
     noauth: true
   noAuthReadOnly: true
