@@ -15,6 +15,7 @@ auth:
 userDefaults:
   ui:
     locale: ja
+    customTheme: windows11
   sidebar:
     showTools: false
     hideFiles: true
@@ -27,3 +28,7 @@ frontend:
   disablePWAInstall: true
   styling:
     customCSS: custom.css
+    customThemes:
+      windows11:
+        description: Windows 11 Fluent
+        css: fluent-windows11.css
