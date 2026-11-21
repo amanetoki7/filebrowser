@@ -17,6 +17,7 @@ userDefaults:
     locale: ja
   sidebar:
     showTools: false
+    hideFiles: true
   preview:
     folder: false
   account:
