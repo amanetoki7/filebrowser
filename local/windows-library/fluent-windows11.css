@@ -149,3 +149,15 @@ html.dark-mode #main { --explorer-hover: #323232; --explorer-selected: #505050; 
   padding-left: .5em !important;
 }
 #main .listing-item { transition: background-color .12s ease !important; }
+
+/* Sidebar navigation highlights use each theme's hover background. */
+html:not(.dark-mode) #sidebar { --navigation-highlight: #e6f3ff; }
+html.dark-mode #sidebar { --navigation-highlight: #323232; }
+#sidebar .tree-node:hover,
+#sidebar .tree-node.current-item,
+#sidebar .tree-node.current-item:hover,
+#sidebar .source-button:hover,
+#sidebar .source-button.active {
+  background-color: var(--navigation-highlight) !important;
+  color: var(--textPrimary);
+}
