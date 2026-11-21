@@ -5,7 +5,7 @@
         <a href="/settings#profile-main" class="person-button action button"
           @click.prevent="navigateTo('/settings', '#profile-main')"
           @mouseenter="showTooltip($event, $t('index.settingsHover'))" @mouseleave="hideTooltip">
-          <i class="material-symbols person-button__icon">person</i>
+          <img :src="`${globalVars.baseURL}public/static/img/user-avatar.png`" class="person-button__avatar" alt="" />
           <span class="person-button__name">{{ user.username }}</span>
           <i aria-label="settings" class="material-symbols person-button__icon">settings</i>
         </a>
@@ -18,7 +18,7 @@
       </div>
       <div v-else-if="user.username !== 'anonymous'" class="inner-card user-card__profile">
         <button class="person-button action button" type="button">
-          <i class="material-symbols person-button__icon">person</i>
+          <img :src="`${globalVars.baseURL}public/static/img/user-avatar.png`" class="person-button__avatar" alt="" />
           <span class="person-button__name">{{ user.username }}</span>
         </button>
       </div>
@@ -89,7 +89,7 @@ export default {
     SidebarLinks,
   },
   data() {
-    return {};
+    return { globalVars };
   },
   computed: {
     // Check if data is loaded before showing user info
@@ -254,6 +254,15 @@ export default {
 </script>
 
 <style>
+.person-button__avatar {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
 
 .user-card {
   flex-direction: row !important;
