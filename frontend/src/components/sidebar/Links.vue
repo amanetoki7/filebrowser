@@ -5,7 +5,7 @@
     <div class="sidebar-links-header"
       :class="{ 'with-top-spacing': isShare && !disableShareCard }">
       <button type="button" :disabled="!isLoggedIn" aria-label="Navigate Home"
-        @click="goHome()" class="action home-button"><HomeIcon /></button>
+        @click="goHome()" class="action home-button"><img :src="sidebarHomeIcon" class="windows-home-icon sidebar-home-icon" width="24" height="24" alt="" aria-hidden="true" /></button>
       <!-- Mode button (is the title) -->
       <span class="mode-toggle">{{ $t("general.navigation") }}</span>
       <i v-if="isShare" aria-label="Edit Share" @mouseenter="showTooltip($event, editShareText)" @mouseleave="hideTooltip"
@@ -140,6 +140,7 @@
 </template>
 
 <script>
+import sidebarHomeIcon from '@/assets/sidebar-home.svg';
 import HelpTooltipIcon from "@/components/HelpTooltipIcon.vue";
 import { state, getters, mutations } from "@/store";
 import {
@@ -177,6 +178,7 @@ export default {
     };
   },
   computed: {
+    sidebarHomeIcon: () => sidebarHomeIcon,
     useTapForSourceTooltip() {
       return useTapForTooltip();
     },
