@@ -111,3 +111,10 @@ html:not(.dark-mode) #main { --explorer-background: #ffffff; }
 html.dark-mode #main { --explorer-background: #191919; }
 #main { background: var(--explorer-background); }
 #main .explorer-area, #main .listing-view-root, #main .listing-items, #main #previewer { background-color: var(--explorer-background); }
+
+/* Explorer hover and selection colors. */
+html:not(.dark-mode) #main { --explorer-hover: #e6f3ff; --explorer-selected: #cde8ff; }
+html.dark-mode #main { --explorer-hover: #323232; --explorer-selected: #505050; }
+#main .listing-item:hover { background: var(--explorer-hover) !important; }
+#main .listing-item[aria-selected='true'],
+#main .listing-item[aria-selected='true']:hover { background: var(--explorer-selected) !important; }
