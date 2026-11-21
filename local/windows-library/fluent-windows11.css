@@ -137,3 +137,15 @@ html.dark-mode #main { --explorer-hover: #323232; --explorer-selected: #505050; 
 #main .listing-item[aria-selected='true'] .name { color: var(--textPrimary) !important; }
 #main .listing-item[aria-selected='true'] .modified { color: var(--textSecondary) !important; }
 #main .listing-item[aria-selected='true'] { --item-selected: var(--textPrimary); }
+
+/* Hover changes color only; keep row geometry identical. */
+#main .listing-items.compact .listing-item,
+#main .listing-items.compact .listing-item:hover,
+#main .listing-items.list .listing-item,
+#main .listing-items.list .listing-item:hover {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: .5em !important;
+}
+#main .listing-item { transition: background-color .12s ease !important; }
