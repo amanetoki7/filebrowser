@@ -18,3 +18,5 @@ userDefaults:
   account:
     disableSettings: true
     lockPassword: true
+frontend:
+  disablePWAInstall: true
