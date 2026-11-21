@@ -19,7 +19,7 @@
           <hr />
         </div>
         <div v-else class="thumb-letters no-select">
-          <i class="material-symbols" :class="{ 'primary-icons': thumbIcon === 'push_pin' || isFolder }">
+          <FolderIcon v-if="thumbIcon === 'folder'" /><i v-else class="material-symbols" :class="{ 'primary-icons': thumbIcon === 'push_pin' || isFolder }">
             {{ thumbIcon }}
           </i>
         </div>

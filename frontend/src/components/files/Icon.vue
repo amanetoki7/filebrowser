@@ -1,6 +1,7 @@
 <template>
+  <span v-if="mimetype === 'directory'" class="image-preview folder-preview"><FolderIcon /><i v-if="isShared" class="material-symbols overlay-icon">group</i></span>
   <!-- Unified preview container for all types -->
-  <span v-if="hasPreviewImage || (shouldUse3DPreview && !threeJsError)" class="image-preview" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+  <span v-else-if="hasPreviewImage || (shouldUse3DPreview && !threeJsError)" class="image-preview" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
     <!-- Overlay icons (folder/animation) positioned top-left -->
     <i v-if="hasPreviewImage && hasMotion && isFile" class="material-symbols-outlined overlay-icon">animation</i>
     <i v-else-if="hasPreviewImage && !isFile" class="material-symbols overlay-icon">folder</i>

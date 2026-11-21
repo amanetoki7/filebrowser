@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import i18n from "@/i18n/index.ts";
 import { state } from "@/store/index.ts";
 // biome-ignore lint/correctness/noUnresolvedImports: disabled temporarily
+import FolderIcon from "@/components/FolderIcon.vue";
 import App from "./App.vue";
 import { router } from "./router/index.ts";
 
@@ -15,6 +16,7 @@ initViewportLayoutListener();
 syncDocumentTheme(defaultDarkMode());
 
 const app = createApp(App);
+app.component("FolderIcon", FolderIcon);
 
 // Install additionals
 app.use(i18n);

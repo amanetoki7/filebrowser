@@ -62,7 +62,8 @@
       </div>
       <div class="upload-list">
         <div v-for="file in files" :key="file.id" class="upload-item">
-          <i class="file-icon" :class="fileTypeInfo(file).classes">{{ fileTypeInfo(file).materialSymbol }}</i>
+          <FolderIcon v-if="file.type === 'directory'" class="file-icon" />
+          <i v-else class="file-icon" :class="fileTypeInfo(file).classes">{{ fileTypeInfo(file).materialSymbol }}</i>
           <div class="file-info">
             <p class="file-name">{{ file.name }}</p>
             <progress-bar v-if="file.type !== 'directory'" :val="file.status === 'completed'

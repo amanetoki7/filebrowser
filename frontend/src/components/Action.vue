@@ -33,7 +33,7 @@
     class="action no-select"
     @click="action"
   >
-    <i :class="iconClass">{{ icon }}</i>
+    <FolderIcon v-if="['folder', 'folder_open', 'folder_shared', 'folder_special', 'create_new_folder'].includes(icon)" /><i v-else :class="iconClass">{{ icon }}</i>
     <span>{{ label }}</span>
     <span v-if="counter > 0" class="counter">{{ counter }}</span>
   </button>
