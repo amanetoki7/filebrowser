@@ -23,6 +23,8 @@ userDefaults:
     folder: false
   listing:
     dateFormat: true
+    gallerySize: 1
+    viewMode: compact
   account:
     disableSettings: true
     lockPassword: true

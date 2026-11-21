@@ -461,14 +461,14 @@ export default {
         }
       } else if (viewMode === 'list' || viewMode === 'compact') {
         const baseHeight = viewMode === 'compact'
-          ? 40 + (size * 2)  // 42px to 58px
+          ? 26 + (size * 4)  // 30px minimum, matching sidebar rows
           : 50 + (size * 3); // 53px to 77px
-        const iconSize = (2 + (size * 0.12)).toFixed(2); // 2.12em to 3.08em
+        const iconSize = viewMode === 'compact' ? `${20 + size * 2}px` : `${(2 + size * 0.12).toFixed(2)}em`;
         const iconFontSize = (1.5 + (size * 0.12)).toFixed(2); // 1.62em to 2.58em
 
         styles['--item-width'] = `calc(${(100 / this.numColumns).toFixed(2)}% - 1em)`;
         styles['--item-height'] = `${baseHeight}px`;
-        styles['--icon-size'] = `${iconSize}em`;
+        styles['--icon-size'] = iconSize;
         styles['--icon-font-size'] = `${iconFontSize}em`;
       } else {
         // Normal view
