@@ -8,7 +8,7 @@
           @dragleave.prevent="dragLeave($event, homeLink)"
           @dragover.prevent="dragOver($event, homeLink)"
           @drop.prevent="drop($event, homeLink)">
-          <i class="material-symbols">home</i>
+          <HomeIcon />
         </router-link>
       </li>
       <li class="item" v-for="(link, index) in items" :key="index">
@@ -102,7 +102,7 @@ export default {
         encodedParts.pop();
       }
       const breadcrumbs = [{
-        name: getters.isShare() ? (state.shareInfo?.title || this.$t('general.home')) : (req.source || req.name),
+        name: getters.isShare() ? (state.shareInfo?.title || this.$t('general.home')) : this.$t('general.home'),
         url: this.base,
         path: '/',
         type: 'normal'

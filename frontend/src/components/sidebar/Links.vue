@@ -4,9 +4,9 @@
     <!-- Links section header -->
     <div class="sidebar-links-header"
       :class="{ 'with-top-spacing': isShare && !disableShareCard }">
-      <i :class="{ 'disabled': !isLoggedIn }"
-        aria-label="Navigate Home"
-        @click="goHome()" class="material-symbols action">home</i>
+      <button type="button" :disabled="!isLoggedIn" aria-label="Navigate Home"
+        @click="goHome()" class="action home-button"><HomeIcon /></button>
+      <!-- Mode button (is the title) -->
       <span class="mode-toggle">{{ $t("general.navigation") }}</span>
       <i v-if="isShare" aria-label="Edit Share" @mouseenter="showTooltip($event, editShareText)" @mouseleave="hideTooltip"
         :class="{ 'disabled': !canEdit }"
