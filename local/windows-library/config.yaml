@@ -21,6 +21,8 @@ userDefaults:
     hideFiles: true
   preview:
     folder: false
+  listing:
+    dateFormat: true
   account:
     disableSettings: true
     lockPassword: true
