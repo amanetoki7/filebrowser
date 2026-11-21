@@ -49,6 +49,17 @@ func userGetHandler(w http.ResponseWriter, r *http.Request, d *Context) (int, er
 	}
 
 	usernameParam := strings.TrimSpace(r.URL.Query().Get("username"))
+	if settings.Config.Auth.Methods.NoAuth && settings.Config.Auth.NoAuthReadOnly {
+		u := PrepForFrontend(*d.User)
+		switch usernameParam {
+		case "self", u.Username:
+			return RenderJSON(w, r, u.FrontendUser)
+		case "":
+			return RenderJSON(w, r, []users.FrontendUser{u.FrontendUser})
+		default:
+			return http.StatusForbidden, nil
+		}
+	}
 	if usernameParam == "self" {
 		u, err := state.GetUserByUsername(d.User.Username)
 		if err == errors.ErrNotExist {
@@ -408,7 +419,7 @@ func userPatchHandler(w http.ResponseWriter, r *http.Request, d *Context) (int, 
 	if err2 != nil {
 		return http.StatusInternalServerError, err2
 	}
-	if !d.User.Permissions.Admin && uValue.LockPassword && state.FieldListIncludes(req.Which, "password") {
+	if !d.User.Permissions.Admin && (uValue.LockPassword || d.User.LockPassword) && state.FieldListIncludes(req.Which, "password") {
 		return http.StatusForbidden, fmt.Errorf("password changes are disabled for this user")
 	}
 	req.User.ID = uValue.ID

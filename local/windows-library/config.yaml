@@ -6,5 +6,15 @@ server:
     - path: 'D:/クリエイティブ/Library'
       config:
         defaultEnabled: true
+        readOnly: true
 auth:
   adminUsername: admin
+  methods:
+    noauth: true
+  noAuthReadOnly: true
+userDefaults:
+  ui:
+    locale: ja
+  account:
+    disableSettings: true
+    lockPassword: true

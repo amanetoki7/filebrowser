@@ -28,7 +28,7 @@ func ResolveNoAuthUser() (users.User, error) {
 	target := noAuthAdminUsername()
 	user, err := GetUserByUsername(target)
 	if err == nil {
-		return user, nil
+		return limitNoAuthUser(user), nil
 	}
 	if !isUserLookupNotFound(err) {
 		return users.User{}, err
@@ -39,9 +39,27 @@ func ResolveNoAuthUser() (users.User, error) {
 		return users.User{}, err
 	}
 	if len(allUsers) == 1 {
-		return allUsers[0], nil
+		return limitNoAuthUser(allUsers[0]), nil
 	}
 	return users.User{}, errors.ErrNotExist
+}
+
+func limitNoAuthUser(user users.User) users.User {
+	if !settings.Config.Auth.NoAuthReadOnly {
+		return user
+	}
+	user.Permissions = users.Permissions{}
+	user.DisableSettings = true
+	user.LockPassword = true
+	user.RequirePasswordChange = false
+	user.BackendScopes = append([]users.BackendScope(nil), user.BackendScopes...)
+	for i := range user.BackendScopes {
+		p := &user.BackendScopes[i].Permissions
+		p.Modify, p.Create, p.Delete = false, false, false
+		p.Configured = true
+	}
+	users.SyncBackendSourcePermissionsMap(&user)
+	return user
 }
 
 // EnsureNoAuthAdminUserAfterMigration runs once after Bolt→SQLite user import when noauth is enabled.

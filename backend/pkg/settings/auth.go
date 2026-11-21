@@ -46,6 +46,7 @@ type AuthCommon struct {
 }
 
 type Auth struct {
+	NoAuthReadOnly       bool         `json:"noAuthReadOnly"`       // restrict unauthenticated access to viewing and downloading files
 	TokenExpirationHours int          `json:"tokenExpirationHours"` // time in hours each web UI session token is valid for. Default is 2 hours.
 	Methods              LoginMethods `json:"methods"`
 	Key                  string       `json:"key"`           // secret: HMAC key for JWT tokens. If unset in config/env, one is generated and stored in the application database.
