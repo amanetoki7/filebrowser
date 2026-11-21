@@ -1,0 +1,6 @@
+/* Hide sidebar link customization and Tools navigation. */
+.sidebar-links-header [aria-label="Edit Links"],
+.sidebar-links a[href="/tools"],
+.sidebar-links a[href^="/tools/"] {
+  display: none !important;
+}

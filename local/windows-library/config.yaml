@@ -15,8 +15,12 @@ auth:
 userDefaults:
   ui:
     locale: ja
+  sidebar:
+    showTools: false
   account:
     disableSettings: true
     lockPassword: true
 frontend:
   disablePWAInstall: true
+  styling:
+    customCSS: custom.css
