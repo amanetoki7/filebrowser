@@ -321,9 +321,6 @@ export const getters = {
     if (getters.currentPromptName() && !getters.isStickySidebar()) {
       visible = false
     }
-    if (previewViews.includes(cv) && !getters.previewPerms().disableHideSidebar) {
-      visible = false
-    }
     if (state.shareInfo?.singleFileShare) {
       visible = state.showSidebar
     }
@@ -353,7 +350,7 @@ export const getters = {
     return hasPrompt || showForSidebar || state.isSearchActive
   },
   showBreadCrumbs: () => {
-    return getters.currentView() === 'listingView'
+    return getters.currentView() === 'listingView' || getters.isPreviewView()
   },
   routePath: (trimModifier = '') => {
     return removePrefix(state.route.path, trimModifier)
@@ -694,6 +691,7 @@ export const getters = {
     }
     return (
       getters.currentView() === "listingView" ||
+      getters.isPreviewView() ||
       getters.isEditorOrMarkdownView() ||
       getters.currentTool()?.component === "AdvancedSearch"
     );

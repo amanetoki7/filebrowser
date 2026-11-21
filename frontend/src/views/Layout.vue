@@ -12,12 +12,16 @@
     <defaultBar></defaultBar>
     <sidebar v-if="!invalidShare"></sidebar>
     <Scrollbar id="main" :class="{
+      'embedded-preview': isEmbeddedPreview,
       moveWithSidebar: moveWithSidebar.shouldMove,
       'remove-padding-top': isOnlyOffice,
       scrollable: scrollable,
     }" :style="[moveWithSidebar.style, spaceForEditorStatusBar]">
       <shelf />
-      <router-view />
+      <div class="explorer-area" :class="{ 'explorer-area--preview': isEmbeddedPreview }">
+        <router-view />
+        <NextPrevious />
+      </div>
     </Scrollbar>
     <prompts></prompts>
   </div>
@@ -27,7 +31,6 @@
   <StatusBar :class="{ moveWithSidebar: moveWithSidebar.shouldMove }" />
   <ContextMenu v-bind="contextMenuProps"></ContextMenu>
   <Tooltip />
-  <NextPrevious />
   <PopupPreview v-if="popupEnabled" />
 </template>
 
@@ -97,6 +100,9 @@ export default {
     this.initialize();
   },
   computed: {
+    isEmbeddedPreview() {
+      return !!state.req?.type && state.req.type !== "directory" && getters.isPreviewView();
+    },
     showSearch() {
       return getters.isLoggedIn() && getters.currentView() === "listingView" && !getters.isShare();
     },
@@ -320,5 +326,30 @@ export default {
 
 #main>div {
   height: 100%;
+}
+
+/* Keep file viewers and their fixed-position controls in the explorer column. */
+#main.embedded-preview {
+  padding-top: calc(var(--header-height) + 3em);
+  padding-bottom: 2.5em;
+  overflow: hidden;
+}
+#main.embedded-preview #shelf { top: var(--header-height); }
+#main > .explorer-area--preview {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  contain: layout paint;
+}
+.explorer-area--preview > div:first-child { height: 100%; }
+.explorer-area--preview #previewer { position: relative; z-index: auto; }
+.explorer-area--preview .transition-loading { position: absolute; }
+.explorer-area--preview .nav-previous,
+.explorer-area--preview .nav-zone-left { left: 1em !important; }
+.explorer-area--preview .nav-close { left: 50% !important; top: 1em; }
+@media (max-width: 768px) {
+  #main.embedded-preview { padding-bottom: 3em; }
 }
 </style>

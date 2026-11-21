@@ -122,6 +122,9 @@ export default {
       return `${this.itemsSelectedLabel} (${this.displayTotalSize})`;
     },
     directoryInfoText() {
+      if (getters.isPreviewView() && state.req?.type !== "directory") {
+        return `${state.req.name || ""} (${getHumanReadableFilesize(state.req.size || 0)})`;
+      }
       const dirs = this.numDirs;
       const files = this.numFiles;
       const sizeText = `(${this.displayTotalSize})`;
