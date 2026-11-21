@@ -17,6 +17,8 @@ userDefaults:
     locale: ja
   sidebar:
     showTools: false
+  preview:
+    folder: false
   account:
     disableSettings: true
     lockPassword: true
