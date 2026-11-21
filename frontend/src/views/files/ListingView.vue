@@ -422,11 +422,9 @@ export default {
     containerStyles() {
       // Dynamic padding-top: applied to the entire container (loading spinner + listing items)
       const isEmpty = this.numDirs + this.numFiles + this.numPinned === 0;
-      const isRootPath = state.req.path === '/' || !state.req.path;
+
       if (isEmpty) {
         return { 'padding-top': '4.1em' }; // Empty - no files or folders
-      } else if (isRootPath) {
-        return { 'padding-top': '4.29em' }; // Root - no breadcrumbs showing
       } else {
         return { 'padding-top': '7.51em' }; // Non-root - breadcrumbs + listing header
       }

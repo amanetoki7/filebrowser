@@ -101,7 +101,12 @@ export default {
         originalParts.pop();
         encodedParts.pop();
       }
-      const breadcrumbs = [];
+      const breadcrumbs = [{
+        name: getters.isShare() ? (state.shareInfo?.title || this.$t('general.home')) : (req.source || req.name),
+        url: this.base,
+        path: '/',
+        type: 'normal'
+      }];
       let buildRef = this.base;
       let accumulatedPath = "";
 
