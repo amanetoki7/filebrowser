@@ -82,6 +82,16 @@ export default {
     };
   },
   mounted() {
+    this.$nextTick(() => {
+      const shelf = document.getElementById("shelf");
+      const main = document.getElementById("main");
+      if (shelf && main) {
+        this.previewShelfObserver = new ResizeObserver(() => {
+          main.style.setProperty("--explorer-shelf-height", `${shelf.getBoundingClientRect().height}px`);
+        });
+        this.previewShelfObserver.observe(shelf);
+      }
+    });
     if (getters.eventTheme() === "halloween") {
       document.documentElement.style.setProperty("--primaryColor", "var(--icon-orange)");
     } else if (state.user.themeColor) {
@@ -98,6 +108,9 @@ export default {
     notify.showPendingToast();
     this.reEval()
     this.initialize();
+  },
+  beforeUnmount() {
+    this.previewShelfObserver?.disconnect();
   },
   computed: {
     isEmbeddedPreview() {
@@ -330,7 +343,7 @@ export default {
 
 /* Keep file viewers and their fixed-position controls in the explorer column. */
 #main.embedded-preview {
-  padding-top: calc(var(--header-height) + 3em);
+  padding-top: calc(var(--header-height) + var(--explorer-shelf-height, 4.5em));
   padding-bottom: 2.5em;
   overflow: hidden;
 }

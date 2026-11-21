@@ -68,6 +68,7 @@ export default {
       return getters.showGallerySizeSlider();
     },
     selectedCount() {
+      if (getters.isPreviewView()) return 0;
       // keep the main listing selection when a item from a FileList owns state.selected
       return (state.selected.find((entry) => typeof entry !== 'number')?.heldSelected ?? state.selected).length;
     },
