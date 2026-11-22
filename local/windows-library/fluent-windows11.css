@@ -213,3 +213,9 @@ html.dark-mode #sidebar { --navigation-highlight: #323232; }
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* Audio player's orange accent. */
+#main .fluent-audio-player { --audio-accent: #c94617; }
+#main .fluent-audio-player .plyr__controls > [data-plyr="play"] {
+  background: linear-gradient(var(--audio-bar),var(--audio-bar)) padding-box, linear-gradient(125deg,#c94617,#ed6094,#a25fee) border-box;
+}

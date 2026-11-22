@@ -1,5 +1,5 @@
 /* Fluent audio player: fixed chrome within the embedded explorer viewport. */
-.fluent-audio-player { --audio-stage: #f3f3f3; --audio-tint: #eee8f8; --audio-bar: #fafafa; --audio-ink: #202020; --audio-muted: #666; --audio-border: #d5d5d5; --audio-hover: #e8e8e8; --audio-accent: #fb873b; container-type: inline-size; }
+.fluent-audio-player { --audio-stage: #f3f3f3; --audio-tint: #eee8f8; --audio-bar: #fafafa; --audio-ink: #202020; --audio-muted: #666; --audio-border: #d5d5d5; --audio-hover: #e8e8e8; --audio-accent: #c94617; container-type: inline-size; }
 html.dark-mode .fluent-audio-player { --audio-stage: #202020; --audio-tint: #221d32; --audio-bar: #202020; --audio-ink: #f6f6f6; --audio-muted: #c0c0c0; --audio-border: #383838; --audio-hover: #333; }
 .plyr-viewer:has(.fluent-audio-player) { height: 100%; overflow: hidden; }
 .plyr-viewer .fluent-audio-player { padding: 0; gap: 0; margin: 0; align-items: stretch; justify-content: flex-end; overflow: hidden; color: var(--audio-ink); background: linear-gradient(160deg,var(--audio-stage) 32%,var(--audio-tint) 100%); }
@@ -22,7 +22,7 @@ html.dark-mode .fluent-audio-player .album-art-container { background: #1c1c1c; 
 .fluent-audio-player .plyr__time--duration { order: 3; font-size: 11px; }
 .fluent-audio-player .plyr__time--duration::before { display: none; }
 .fluent-audio-player .plyr__controls > [data-plyr="rewind"], .fluent-audio-player .plyr__controls > [data-plyr="fast-forward"], .fluent-audio-player .plyr__control--overlaid { display: none !important; }
-.fluent-audio-player .plyr__controls > [data-plyr="play"] { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); width: 48px; height: 48px; border: 4px solid transparent; border-radius: 50%; background: linear-gradient(var(--audio-bar),var(--audio-bar)) padding-box,linear-gradient(125deg,#ff9324,#ed6094,#a25fee) border-box; color: var(--audio-ink); z-index: 5; padding: 8px; }
+.fluent-audio-player .plyr__controls > [data-plyr="play"] { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); width: 48px; height: 48px; border: 4px solid transparent; border-radius: 50%; background: linear-gradient(var(--audio-bar),var(--audio-bar)) padding-box,linear-gradient(125deg,#c94617,#ed6094,#a25fee) border-box; color: var(--audio-ink); z-index: 5; padding: 8px; }
 .fluent-audio-player .plyr__control svg { width: 22px; height: 22px; }
 .fluent-audio-player .plyr__controls > [data-plyr="play"] svg { width: 24px; height: 24px; }
 .fluent-audio-player .plyr__volume { position: absolute; right: 64px; bottom: 22px; width: 112px; max-width: 112px; margin: 0; height: 32px; }
