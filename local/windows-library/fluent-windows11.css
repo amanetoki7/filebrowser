@@ -226,3 +226,39 @@ html.dark-mode #main .fluent-audio-player { --audio-accent: #f5853e; }
 #main .fluent-audio-player .plyr__controls > [data-plyr="play"] {
   background: linear-gradient(var(--audio-bar),var(--audio-bar)) padding-box, linear-gradient(125deg,var(--audio-accent),#ed6094,#a25fee) border-box;
 }
+
+/* Stable circular audio seek thumb with a white outline. */
+#main .fluent-audio-player input[data-plyr="seek"] {
+  --plyr-range-thumb-height: 14px;
+  --plyr-range-thumb-active-shadow-width: 0px;
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+#main .fluent-audio-player input[data-plyr="seek"]::-webkit-slider-thumb {
+  width: 14px !important;
+  height: 14px !important;
+  box-sizing: border-box !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  background: var(--audio-accent) !important;
+  box-shadow: none !important;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+#main .fluent-audio-player input[data-plyr="seek"]::-moz-range-thumb {
+  width: 14px !important;
+  height: 14px !important;
+  box-sizing: border-box !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  background: var(--audio-accent) !important;
+  box-shadow: none !important;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+}
