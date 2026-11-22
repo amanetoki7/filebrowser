@@ -121,3 +121,17 @@ html.dark-mode .fluent-audio-player .album-art-container { background: #1c1c1c; 
   color: currentColor;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Numeric volume value follows the slider, including while muted. */
+.fluent-audio-player .plyr__volume { width: 152px; max-width: 152px; }
+.fluent-audio-player .plyr__volume::after {
+  content: var(--audio-volume-label, "100");
+  display: block;
+  flex: 0 0 3ch;
+  margin-left: 8px;
+  color: var(--audio-ink);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 32px;
+  text-align: right;
+}

@@ -609,7 +609,10 @@ export default {
       return '\ue995';
     },
     fluentVolumeStyle() {
-      return { '--audio-volume-glyph': `"${this.fluentVolumeGlyph}"` };
+      return {
+        '--audio-volume-glyph': `"${this.fluentVolumeGlyph}"`,
+        '--audio-volume-label': `"${Math.round(this.fluentVolume * 100)}"`,
+      };
     },
     fluentShuffleIcon() {
       return this.playbackMode === 'shuffle' ? 'arrow_shuffle' : 'arrow_shuffle_off';
