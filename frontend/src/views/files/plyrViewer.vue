@@ -5,6 +5,7 @@
       v-if="previewType === 'audio'"
       ref="audioPlayerGestureRoot"
       class="audio-player-container audio-player-container--plyr-gestures fluent-audio-player"
+      :style="fluentVolumeStyle"
       :class="{ 'audio-player-container--lyrics-open': isMobile && showMobileLyrics && lyrics.length }"
     >
       <!-- Desktop panel button, will auto‑hide only when panel is closed -->
@@ -117,7 +118,7 @@
           <button type="button" aria-label="リピート" :title="loop === 'single' ? '1曲リピート' : loop === 'all' ? '全曲リピート' : 'リピートなし'" :aria-pressed="loop !== 'off'" @click.stop="toggleFluentLoop"><FluentPlayerIcon :name="fluentLoopIcon" /></button>
         </div>
         <div class="plyr-audio-container" ref="plyrAudioContainer">
-          <audio :src="raw" :type="req.type" :autoplay="shouldAutoplay" @play="handlePlay" @timeupdate="syncFluentTime" @loadedmetadata="syncFluentTime" @durationchange="syncFluentTime" @seeked="syncFluentTime" @emptied="syncFluentTime" ref="audioElement"></audio>
+          <audio :src="raw" :type="req.type" :autoplay="shouldAutoplay" @play="handlePlay" @volumechange="syncFluentVolume" @timeupdate="syncFluentTime" @loadedmetadata="syncFluentTime" @durationchange="syncFluentTime" @seeked="syncFluentTime" @emptied="syncFluentTime" ref="audioElement"></audio>
         </div>
       </div>
 
@@ -340,6 +341,8 @@ export default {
   emits: ['play', 'navigate-previous', 'navigate-next', 'close-preview'],
   data() {
     return {
+      fluentVolume: 1,
+      fluentMuted: false,
       fluentCurrentTime: 0,
       fluentDuration: 0,
       // Toast
@@ -598,6 +601,16 @@ export default {
     },
   },
   computed: {
+    fluentVolumeGlyph() {
+      const volume = Math.round(this.fluentVolume * 100);
+      if (this.fluentMuted || volume === 0) return '\ue74f';
+      if (volume <= 33) return '\ue993';
+      if (volume <= 66) return '\ue994';
+      return '\ue995';
+    },
+    fluentVolumeStyle() {
+      return { '--audio-volume-glyph': `"${this.fluentVolumeGlyph}"` };
+    },
     fluentShuffleIcon() {
       return this.playbackMode === 'shuffle' ? 'arrow_shuffle' : 'arrow_shuffle_off';
     },
@@ -899,12 +912,18 @@ export default {
     window.removeEventListener('pagehide', this.pagehideHandler);
   },
   methods: {
+    syncFluentVolume(event) {
+      const media = event?.target || this.$refs.audioElement;
+      this.fluentVolume = Number.isFinite(media?.volume) ? media.volume : 1;
+      this.fluentMuted = !!media?.muted;
+    },
     formatFluentTime(value) {
       const seconds = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
       const pad = value => String(value).padStart(2, '0');
       return `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`;
     },
     syncFluentTime(event) {
+      this.syncFluentVolume(event);
       const media = event?.target || this.$refs.audioElement;
       this.fluentCurrentTime = Number.isFinite(media?.currentTime) ? media.currentTime : 0;
       this.fluentDuration = Number.isFinite(media?.duration) ? media.duration : 0;

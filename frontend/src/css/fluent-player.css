@@ -104,3 +104,20 @@ html.dark-mode .fluent-audio-player .album-art-container { background: #1c1c1c; 
   transform: none !important;
   filter: none !important;
 }
+
+/* Segoe Fluent volume glyphs: Mute / Volume1 / Volume2 / Volume3. */
+.fluent-audio-player .plyr__volume [data-plyr="mute"] svg { display: none !important; }
+.fluent-audio-player .plyr__volume [data-plyr="mute"]::before {
+  content: var(--audio-volume-glyph, "\e995");
+  font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 22px;
+  line-height: 22px;
+  display: block;
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  color: currentColor;
+  -webkit-font-smoothing: antialiased;
+}
