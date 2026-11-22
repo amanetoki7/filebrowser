@@ -7,9 +7,7 @@
           <span>{{ editorStatsText }}</span>
         </template>
         <template v-else>
-          <span v-if="selectedCount > 0" class="button">{{ selectedCount }}</span>
-          <span v-if="selectedCount > 0">{{ selectedItemsText }}</span>
-          <span v-else>{{ directoryInfoText }}</span>
+          <span>{{ directoryInfoText }}<template v-if="selectedCount > 0"> | {{ selectedItemsText }}</template></span>
         </template>
       </div>
       <!-- Right side: Slider to control the listing size or the font size in editor -->
@@ -78,10 +76,6 @@ export default {
     numFiles() {
       return getters.reqNumFiles();
     },
-    totalDirectorySize() {
-      if (!Array.isArray(state.req?.items)) return 0;
-      return state.req.items.reduce((total, item) => total + (item.size || 0), 0);
-    },
     // Calculate total size of selected items
     totalSelectedSize() {
       if (this.selectedCount === 0) return 0;
@@ -96,31 +90,12 @@ export default {
       }
       return total;
     },
-    // Total size
-    displayTotalSize() {
-      const size = this.selectedCount > 0 ? this.totalSelectedSize : this.totalDirectorySize;
-      return getHumanReadableFilesize(size);
-    },
-    // i18n labels with compile-time checked keys
-    itemsSelectedLabel() {
-      if (this.selectedCount === 1) {
-        return this.$t("general.selectionSingle");
-      }
-      return this.$t("general.selectionMultiple");
-    },
-    foldersLabel() {
-      return this.numDirs === 1
-        ? this.$t("general.folder")
-        : this.$t("general.folders");
-    },
-    filesLabel() {
-      return this.numFiles === 1
-        ? this.$t("general.file")
-        : this.$t("general.files");
-    },
-    // Complete text with raw characters moved from template
     selectedItemsText() {
-      return `${this.itemsSelectedLabel} (${this.displayTotalSize})`;
+      const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+      const bytes = Math.max(0, this.totalSelectedSize);
+      const unitIndex = bytes > 0 ? Math.min(units.length - 1, Math.max(0, Math.floor(Math.log(bytes) / Math.log(1024)))) : 0;
+      const size = (bytes / (1024 ** unitIndex)).toFixed(unitIndex === 0 ? 0 : 2);
+      return `${this.selectedCount} \u500b\u306e\u9805\u76ee\u3092\u9078\u629e ${size} ${units[unitIndex]}`;
     },
     directoryInfoText() {
       if (getters.isPreviewView() && state.req?.type !== "directory") {
