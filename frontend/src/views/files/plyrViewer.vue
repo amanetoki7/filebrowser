@@ -44,9 +44,6 @@
             <div class="audio-title">
               {{ metadata.title }}
             </div>
-            <div class="audio-artist" v-if="metadata.artist">
-              {{ formattedArtist }}
-            </div>
             <div class="audio-album" v-if="metadata.album">
               {{ metadata.album }}
             </div>
@@ -105,8 +102,8 @@
 
       <!-- Audio controls -->
       <div class="audio-controls-container" :class="{ 'dark-mode': darkMode, 'light-mode': !darkMode }">
-        <div class="fluent-track-title" :title="metadata?.title || req.name">
-          <strong>{{ metadata?.title || req.name }}</strong><span v-if="metadata?.artist">{{ formattedArtist }}</span>
+        <div class="fluent-track-title" :title="req.name">
+          <strong>{{ req.name }}</strong>
         </div>
         <div class="fluent-transport">
           <button type="button" aria-label="シャッフル" :title="playbackMode === 'shuffle' ? 'シャッフル有効' : 'シャッフル無効'" :aria-pressed="playbackMode === 'shuffle'" @click.stop="toggleFluentShuffle"><FluentPlayerIcon :name="fluentShuffleIcon" /></button>
@@ -247,7 +244,6 @@ import {
   getModeIcon,
   getLoopLabel,
   getLoopIcon,
-  formatArtist
 } from '@/utils/playbackQueue.js';
 import { getTypeFromMime } from '@/utils/files.js';
 import { buildItemUrl } from '@/utils/url.js';
@@ -616,9 +612,6 @@ export default {
     filetype() {
       return getTypeFromMime(this.req.type || '');
     },
-    formattedArtist() {
-      return formatArtist(this.metadata?.artist);
-    },
     desktopPanelToggleLabel() {
       return this.showDesktopPanel ? this.$t('player.closePanel') : this.$t('player.openPanel');
     },
@@ -937,9 +930,9 @@ export default {
       // Video uses the same thumbnail as the poster; audio uses embedded album art (if any).
       const artworkSrc = this.previewType === 'video' ? this.posterUrl : this.albumArtUrl;
       const metadata = {
-        title: this.metadata?.title || this.fileName,
-        artist: this.metadata?.artist || globalVars.name || "Filebrowser Quantum",
-        album: this.metadata?.album || "",
+        title: this.req.name,
+        artist: "",
+        album: "",
         // In current versions of Firefox the artwork will not work, seems that doesn't like blob URLs.
         // But testing in 149.0a1 (nightly builds), it seems to work, so this something that will solve over time :)
         artwork: [ { src: artworkSrc || fallbackUrl } ]
@@ -1423,10 +1416,10 @@ export default {
       // Check if metadata is already provided by the backend
       if (this.req.metadata) {
         this.metadata = {
-          title: this.req.metadata.title || this.fileName, // Fallback to filename
-          artist: this.req.metadata.artist || null,
-          album: this.req.metadata.album || null,
-          year: this.req.metadata.year || null
+          title: this.req.name,
+          artist: null,
+          album: null,
+          year: null
         };
         // Handle base64 encoded album art
         if (this.req.metadata.albumArt) {
@@ -1442,7 +1435,7 @@ export default {
         }
       } else {
         this.metadata = {
-          title: this.fileName,
+          title: this.req.name,
           artist: null,
           album: null,
           year: null,

@@ -131,7 +131,6 @@ import {
   getModeIcon,
   getLoopLabel,
   getLoopIcon,
-  formatArtist
 } from '@/utils/playbackQueue.js';
 import Icon from "@/components/files/Icon.vue";
 import { resourcesApi } from "@/api";
@@ -183,19 +182,10 @@ export default {
       return this.playbackQueue.map((item) => {
         const metadata = item.metadata || {};
         // Title: fallback to filename without extension
-        const title = metadata.title || removeExtension(item.name);
+        const title = item.name;
         // Artist formatted
-        const artist = formatArtist(metadata.artist);
-        // Album name with year
-        let album = '';
-        if (metadata.album) {
-          album = metadata.album;
-          if (metadata.year) {
-            album += ` (${metadata.year})`;
-          }
-        } else if (metadata.year) {
-          album = metadata.year;
-        }
+        const artist = '';
+        const album = '';
         // File type
         const fileType = getTypeFromMime(item.type);
         // Duration
