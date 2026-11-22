@@ -4,7 +4,7 @@
     <div
       v-if="previewType === 'audio'"
       ref="audioPlayerGestureRoot"
-      class="audio-player-container audio-player-container--plyr-gestures"
+      class="audio-player-container audio-player-container--plyr-gestures fluent-audio-player"
       :class="{ 'audio-player-container--lyrics-open': isMobile && showMobileLyrics && lyrics.length }"
     >
       <!-- Desktop panel button, will auto‑hide only when panel is closed -->
@@ -35,7 +35,7 @@
               @wheel="onAlbumArtScroll">
             <img class="no-select album-art" v-if="albumArtUrl" :src="albumArtUrl" :alt="metadata.album || 'Album art'" />
             <div v-else class="album-art-fallback">
-              <i class="material-symbols">music_note</i>
+              <FluentPlayerIcon name="music_note_2" />
             </div>
           </div>
 
@@ -104,7 +104,19 @@
       </div>
 
       <!-- Audio controls -->
-      <div class="audio-controls-container">
+      <div class="audio-controls-container" :class="{ 'dark-mode': darkMode, 'light-mode': !darkMode }">
+        <div class="fluent-track-title" :title="metadata?.title || req.name">
+          <strong>{{ metadata?.title || req.name }}</strong><span v-if="metadata?.artist">{{ formattedArtist }}</span>
+        </div>
+        <div class="fluent-transport">
+          <button type="button" aria-label="シャッフル" title="シャッフル" :aria-pressed="playbackMode === 'shuffle'" @click.stop="toggleFluentShuffle"><FluentPlayerIcon name="arrow_shuffle" /></button>
+          <button type="button" aria-label="前の曲" title="前の曲" :disabled="!fluentPreviousAvailable" @click.stop="$emit('navigate-previous')"><FluentPlayerIcon name="previous" /></button>
+          <button type="button" aria-label="10秒戻す" title="10秒戻す" @click.stop="player?.rewind(10)" class="fluent-seek"><FluentPlayerIcon name="arrow_counterclockwise" /><small>10</small></button>
+          <span class="fluent-play-slot" aria-hidden="true"></span>
+          <button type="button" aria-label="30秒進む" title="30秒進む" @click.stop="player?.forward(30)" class="fluent-seek"><FluentPlayerIcon name="arrow_clockwise" /><small>30</small></button>
+          <button type="button" aria-label="次の曲" title="次の曲" :disabled="!fluentNextAvailable" @click.stop="$emit('navigate-next')"><FluentPlayerIcon name="next" /></button>
+          <button type="button" aria-label="リピート" :title="loop === 'single' ? '1曲リピート' : loop === 'all' ? '全曲リピート' : 'リピートなし'" :aria-pressed="loop !== 'off'" @click.stop="toggleFluentLoop"><FluentPlayerIcon name="arrow_repeat_all" /><small v-if="loop === 'single'">1</small></button>
+        </div>
         <div class="plyr-audio-container" ref="plyrAudioContainer">
           <audio :src="raw" :type="req.type" :autoplay="shouldAutoplay" @play="handlePlay" ref="audioElement"></audio>
         </div>
@@ -205,7 +217,7 @@
     <!-- Toast when you change playback modes in the media player -->
     <div :class="['playback-toast', toastVisible ? 'visible' : '']">
       <!-- Loop icon for "single playback", "loop single file" and "loop all files" -->
-      <i class="material-symbols">{{ toastIcon }}</i>
+      <FluentPlayerIcon v-if="previewType === 'audio'" :name="toastType === 'loop' ? 'arrow_repeat_all' : 'arrow_shuffle'" /><i v-else class="material-symbols">{{ toastIcon }}</i>
       <span>{{ playbackModeMessage }}</span>
 
       <!-- Status indicator for loop -->
@@ -221,6 +233,7 @@
 </template>
 
 <script>
+import FluentPlayerIcon from "@/components/FluentPlayerIcon.vue";
 import Plyr from 'plyr';
 import {
   buildPlaybackQueue,
@@ -291,6 +304,7 @@ let mediaSessionOwner = 0;
 export default {
   name: "plyrViewer",
   components: {
+    FluentPlayerIcon,
     AudioPanel,
     LoadingSpinner,
     FloatingActionButton,
@@ -584,6 +598,12 @@ export default {
     },
   },
   computed: {
+    fluentPreviousAvailable() {
+      return getters.isPreviewPlaybackQueueNavMode() ? getters.playbackQueueCanGoPrevious() : !!state.navigation.previousLink;
+    },
+    fluentNextAvailable() {
+      return getters.isPreviewPlaybackQueueNavMode() ? getters.playbackQueueCanGoNext() : !!state.navigation.nextLink;
+    },
     routePath() {
       return state.route.path;
     },
@@ -832,7 +852,7 @@ export default {
           iosNative: true,
           container: '.plyr-viewer',
         },
-        iconUrl: `${globalVars.baseURL}public/static/img/plyr.svg`,
+        iconUrl: `${globalVars.baseURL}public/static/img/${this.previewType === 'audio' ? 'fluent-plyr.svg' : 'plyr.svg'}`,
         // Blob/async tracks need addtrack → captions.update; otherwise meta never fills and toggle CC throws (track undefined).
         // Do not call toggleCaptions() here — Plyr already applies `plyr` localStorage for captions on/off.
         captions: {
@@ -876,6 +896,16 @@ export default {
     window.removeEventListener('pagehide', this.pagehideHandler);
   },
   methods: {
+    toggleFluentShuffle() {
+      const mode = this.playbackMode === 'shuffle' ? 'sequential' : 'shuffle';
+      cyclePlaybackModes(this.playbackMode, {
+        listing: this.listing, currentItem: this.req, isShare: getters.isShare(), targetMode: mode
+      });
+    },
+    toggleFluentLoop() {
+      const loop = this.loop === 'off' ? 'all' : this.loop === 'all' ? 'single' : 'off';
+      mutations.setPlaybackQueue({ queue: this.playbackQueue, currentIndex: this.currentQueueIndex, mode: this.playbackMode, loop });
+    },
     /** Plyr captions menu: show format only (e.g. `.srt`, `.ass`), not the video basename. */
     subtitleTrackLabel(sub) {
       const ext = getSubtitleFormatExtension(sub?.name || '');
@@ -2054,7 +2084,7 @@ export default {
         return true;
       }
       return !!el.closest(
-        '.plyr__controls, .plyr__control, .plyr__menu__container, .plyr__menu, ' +
+        '.fluent-transport, .plyr__controls, .plyr__control, .plyr__menu__container, .plyr__menu, ' +
         '[data-plyr="seek"], .plyr__progress, [data-plyr="volume"], .plyr__volume, ' +
         '.audio-side-panel .tab-btn, ' +
         '.audio-side-panel .fab-button, ' +
@@ -4017,3 +4047,5 @@ export default {
 }
 
 </style>
+
+<style src="../../css/fluent-player.css"></style>
