@@ -21,6 +21,13 @@ userDefaults:
     hideFiles: true
   preview:
     folder: false
+    image: false
+    video: false
+    audio: false
+    motionVideoPreview: false
+    office: false
+    popup: false
+    models: false
   listing:
     dateFormat: true
     gallerySize: 1
