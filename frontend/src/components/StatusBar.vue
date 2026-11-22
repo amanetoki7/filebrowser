@@ -126,18 +126,7 @@ export default {
       if (getters.isPreviewView() && state.req?.type !== "directory") {
         return `${state.req.name || ""} (${getHumanReadableFilesize(state.req.size || 0)})`;
       }
-      const dirs = this.numDirs;
-      const files = this.numFiles;
-      const sizeText = `(${this.displayTotalSize})`;
-
-      if (dirs === 0 && files === 0) {
-        return this.$t('files.lonely');
-      }
-      const parts = [];
-      if (dirs > 0) parts.push(`${dirs} ${this.foldersLabel}`);
-      if (files > 0) parts.push(`${files} ${this.filesLabel}`);
-
-      return `${parts.join(' | ')} ${sizeText}`;
+      return `${this.numDirs + this.numFiles} \u500b\u306e\u9805\u76ee`;
     },
     moveWithSidebar() {
       if (getters.isStickySidebar() && getters.isSidebarVisible()) {
