@@ -219,3 +219,10 @@ html.dark-mode #sidebar { --navigation-highlight: #323232; }
 #main .fluent-audio-player .plyr__controls > [data-plyr="play"] {
   background: linear-gradient(var(--audio-bar),var(--audio-bar)) padding-box, linear-gradient(125deg,#c94617,#ed6094,#a25fee) border-box;
 }
+
+/* Theme-specific audio accent, including the orange play-ring segment. */
+html:not(.dark-mode) #main .fluent-audio-player { --audio-accent: #c94617; }
+html.dark-mode #main .fluent-audio-player { --audio-accent: #f5853e; }
+#main .fluent-audio-player .plyr__controls > [data-plyr="play"] {
+  background: linear-gradient(var(--audio-bar),var(--audio-bar)) padding-box, linear-gradient(125deg,var(--audio-accent),#ed6094,#a25fee) border-box;
+}
