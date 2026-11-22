@@ -34,7 +34,7 @@ html.dark-mode .fluent-audio-player .album-art-container { background: #1c1c1c; 
 .fluent-transport { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: grid; grid-template-columns: 36px 36px 36px 48px 36px 36px 36px; gap: 4px; align-items: center; height: 48px; z-index: 4; }
 .fluent-transport button { display: flex; position: relative; align-items: center; justify-content: center; width: 36px; height: 36px; border: 0; border-radius: 4px; padding: 6px; background: transparent; color: var(--audio-ink); cursor: pointer; }
 .fluent-transport button:hover { background: var(--audio-hover); }
-.fluent-transport button[aria-pressed="true"] { color: var(--audio-accent); }
+
 .fluent-transport button:disabled { opacity: .35; cursor: default; }
 .fluent-transport small { position: absolute; bottom: 0; left: 0; width: 100%; font-size: 9px; line-height: 10px; }
 .fluent-transport .fluent-seek .fluent-player-icon { transform: none; }

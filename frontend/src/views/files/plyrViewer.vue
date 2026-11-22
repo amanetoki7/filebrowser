@@ -109,13 +109,13 @@
           <strong>{{ metadata?.title || req.name }}</strong><span v-if="metadata?.artist">{{ formattedArtist }}</span>
         </div>
         <div class="fluent-transport">
-          <button type="button" aria-label="シャッフル" title="シャッフル" :aria-pressed="playbackMode === 'shuffle'" @click.stop="toggleFluentShuffle"><FluentPlayerIcon name="arrow_shuffle" /></button>
+          <button type="button" aria-label="シャッフル" :title="playbackMode === 'shuffle' ? 'シャッフル有効' : 'シャッフル無効'" :aria-pressed="playbackMode === 'shuffle'" @click.stop="toggleFluentShuffle"><FluentPlayerIcon :name="fluentShuffleIcon" /></button>
           <button type="button" aria-label="前の曲" title="前の曲" :disabled="!fluentPreviousAvailable" @click.stop="$emit('navigate-previous')"><FluentPlayerIcon name="previous" /></button>
           <button type="button" aria-label="10秒戻す" title="10秒戻す" @click.stop="player?.rewind(10)" class="fluent-seek"><FluentPlayerIcon name="seek_back_10" /></button>
           <span class="fluent-play-slot" aria-hidden="true"></span>
           <button type="button" aria-label="30秒進む" title="30秒進む" @click.stop="player?.forward(30)" class="fluent-seek"><FluentPlayerIcon name="seek_forward_30" /></button>
           <button type="button" aria-label="次の曲" title="次の曲" :disabled="!fluentNextAvailable" @click.stop="$emit('navigate-next')"><FluentPlayerIcon name="next" /></button>
-          <button type="button" aria-label="リピート" :title="loop === 'single' ? '1曲リピート' : loop === 'all' ? '全曲リピート' : 'リピートなし'" :aria-pressed="loop !== 'off'" @click.stop="toggleFluentLoop"><FluentPlayerIcon name="arrow_repeat_all" /><small v-if="loop === 'single'">1</small></button>
+          <button type="button" aria-label="リピート" :title="loop === 'single' ? '1曲リピート' : loop === 'all' ? '全曲リピート' : 'リピートなし'" :aria-pressed="loop !== 'off'" @click.stop="toggleFluentLoop"><FluentPlayerIcon :name="fluentLoopIcon" /></button>
         </div>
         <div class="plyr-audio-container" ref="plyrAudioContainer">
           <audio :src="raw" :type="req.type" :autoplay="shouldAutoplay" @play="handlePlay" ref="audioElement"></audio>
@@ -217,7 +217,7 @@
     <!-- Toast when you change playback modes in the media player -->
     <div :class="['playback-toast', toastVisible ? 'visible' : '']">
       <!-- Loop icon for "single playback", "loop single file" and "loop all files" -->
-      <FluentPlayerIcon v-if="previewType === 'audio'" :name="toastType === 'loop' ? 'arrow_repeat_all' : 'arrow_shuffle'" /><i v-else class="material-symbols">{{ toastIcon }}</i>
+      <FluentPlayerIcon v-if="previewType === 'audio'" :name="toastType === 'loop' ? fluentLoopIcon : fluentShuffleIcon" /><i v-else class="material-symbols">{{ toastIcon }}</i>
       <span>{{ playbackModeMessage }}</span>
 
       <!-- Status indicator for loop -->
@@ -598,6 +598,12 @@ export default {
     },
   },
   computed: {
+    fluentShuffleIcon() {
+      return this.playbackMode === 'shuffle' ? 'arrow_shuffle' : 'arrow_shuffle_off';
+    },
+    fluentLoopIcon() {
+      return this.loop === 'off' ? 'arrow_repeat_all_off' : this.loop === 'single' ? 'arrow_repeat_1' : 'arrow_repeat_all';
+    },
     fluentPreviousAvailable() {
       return getters.isPreviewPlaybackQueueNavMode() ? getters.playbackQueueCanGoPrevious() : !!state.navigation.previousLink;
     },
