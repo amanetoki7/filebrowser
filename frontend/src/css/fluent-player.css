@@ -37,7 +37,7 @@ html.dark-mode .fluent-audio-player .album-art-container { background: #1c1c1c; 
 .fluent-transport button[aria-pressed="true"] { color: var(--audio-accent); }
 .fluent-transport button:disabled { opacity: .35; cursor: default; }
 .fluent-transport small { position: absolute; bottom: 0; left: 0; width: 100%; font-size: 9px; line-height: 10px; }
-.fluent-transport .fluent-seek .fluent-player-icon { transform: translateY(-3px); }
+.fluent-transport .fluent-seek .fluent-player-icon { transform: none; }
 .explorer-area--preview:has(.fluent-audio-player) .nav-button { display: none !important; }
 @container (max-width: 760px) {
   .fluent-audio-player .audio-controls-container { flex-basis: 176px; height: 176px; }
