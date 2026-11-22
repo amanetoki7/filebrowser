@@ -102,6 +102,8 @@
 
       <!-- Audio controls -->
       <div class="audio-controls-container" :class="{ 'dark-mode': darkMode, 'light-mode': !darkMode }">
+        <span class="fluent-time fluent-time-current" aria-label="再生時間">{{ formatFluentTime(fluentCurrentTime) }}</span>
+        <span class="fluent-time fluent-time-duration" aria-label="合計時間">{{ formatFluentTime(fluentDuration) }}</span>
         <div class="fluent-track-title" :title="req.name">
           <strong>{{ req.name }}</strong>
         </div>
@@ -115,7 +117,7 @@
           <button type="button" aria-label="リピート" :title="loop === 'single' ? '1曲リピート' : loop === 'all' ? '全曲リピート' : 'リピートなし'" :aria-pressed="loop !== 'off'" @click.stop="toggleFluentLoop"><FluentPlayerIcon :name="fluentLoopIcon" /></button>
         </div>
         <div class="plyr-audio-container" ref="plyrAudioContainer">
-          <audio :src="raw" :type="req.type" :autoplay="shouldAutoplay" @play="handlePlay" ref="audioElement"></audio>
+          <audio :src="raw" :type="req.type" :autoplay="shouldAutoplay" @play="handlePlay" @timeupdate="syncFluentTime" @loadedmetadata="syncFluentTime" @durationchange="syncFluentTime" @seeked="syncFluentTime" @emptied="syncFluentTime" ref="audioElement"></audio>
         </div>
       </div>
 
@@ -338,6 +340,8 @@ export default {
   emits: ['play', 'navigate-previous', 'navigate-next', 'close-preview'],
   data() {
     return {
+      fluentCurrentTime: 0,
+      fluentDuration: 0,
       // Toast
       toastVisible: false,
       toastTimeout: null,
@@ -895,6 +899,16 @@ export default {
     window.removeEventListener('pagehide', this.pagehideHandler);
   },
   methods: {
+    formatFluentTime(value) {
+      const seconds = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+      const pad = value => String(value).padStart(2, '0');
+      return `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`;
+    },
+    syncFluentTime(event) {
+      const media = event?.target || this.$refs.audioElement;
+      this.fluentCurrentTime = Number.isFinite(media?.currentTime) ? media.currentTime : 0;
+      this.fluentDuration = Number.isFinite(media?.duration) ? media.duration : 0;
+    },
     toggleFluentShuffle() {
       const mode = this.playbackMode === 'shuffle' ? 'sequential' : 'shuffle';
       cyclePlaybackModes(this.playbackMode, {

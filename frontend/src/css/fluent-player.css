@@ -61,3 +61,10 @@ html.dark-mode .fluent-audio-player .album-art-container { background: #1c1c1c; 
   .fluent-audio-player .audio-player-content { padding: 16px !important; }
   .fluent-audio-player .audio-controls-container .fluent-track-title { left: 16px; }
 }
+
+/* Stable eight-character elapsed and total times. */
+.fluent-audio-player .plyr__time { display: none !important; }
+.fluent-audio-player .audio-controls-container .plyr__controls { padding-left: 78px; padding-right: 78px; }
+.fluent-audio-player .fluent-time { position: absolute; top: 20px; font-size: 11px; line-height: 16px; font-variant-numeric: tabular-nums; color: var(--audio-ink); z-index: 2; }
+.fluent-audio-player .fluent-time-current { left: 16px; }
+.fluent-audio-player .fluent-time-duration { right: 16px; }
