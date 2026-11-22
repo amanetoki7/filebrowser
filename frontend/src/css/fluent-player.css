@@ -151,5 +151,19 @@ html.dark-mode .fluent-media-player .album-art-container { background: #1c1c1c; 
 .fluent-video-player .plyr__volume { right: 166px; }
 .fluent-video-player .plyr__captions { bottom: 148px; }
 .fluent-video-player .video-loading-overlay { bottom: 132px; }
-@container (max-width: 1100px) { .fluent-video-player .fluent-track-title { width: 20%; } .fluent-video-player .plyr__volume { width: 36px; max-width: 36px; } .fluent-video-player .plyr__volume input, .fluent-video-player .plyr__volume::after { display: none !important; } }
-@container (max-width: 760px) { .fluent-video-player .plyr .plyr__video-wrapper { bottom: 176px; } .fluent-video-player .plyr .plyr__controls { height: 176px; padding-bottom: 132px; } .fluent-video-player .fluent-video-chrome { height: 176px; } .fluent-video-player .plyr__controls > [data-plyr="fullscreen"], .fluent-video-player .plyr__controls > [data-plyr="pip"], .fluent-video-player .plyr__controls > [data-plyr="captions"] { bottom: 72px; } .fluent-video-player .plyr__captions { bottom: 192px; } }
+/* Keep the shared volume slider and number visible at narrower widths. */
+.fluent-media-player .plyr__volume { gap: 0; --plyr-range-fill-background: var(--audio-accent); --plyr-range-thumb-background: var(--audio-accent); }
+.fluent-media-player .plyr__volume input[data-plyr="volume"] { display: block !important; flex: 1 1 0; width: 0; min-width: 0; }
+@container (max-width: 1100px) {
+  .fluent-video-player .plyr .plyr__video-wrapper { bottom: 176px; }
+  .fluent-video-player .plyr .plyr__controls { height: 176px; padding-bottom: 132px; }
+  .fluent-video-player .fluent-video-chrome { height: 176px; }
+  .fluent-video-player .fluent-track-title { top: 48px; bottom: auto; width: calc(100% - 350px); }
+  .fluent-video-player .plyr__volume { width: 152px; max-width: 152px; bottom: 72px; }
+  .fluent-video-player .plyr__menu, .fluent-video-player .plyr__controls > [data-plyr="fullscreen"], .fluent-video-player .plyr__controls > [data-plyr="pip"], .fluent-video-player .plyr__controls > [data-plyr="captions"] { bottom: 72px; }
+  .fluent-video-player .plyr__captions { bottom: 192px; }
+  .fluent-video-player .video-loading-overlay { bottom: 176px; }
+}
+@container (max-width: 600px) {
+  .fluent-video-player .audio-controls-container .fluent-track-title { width: calc(100% - 32px); }
+}
