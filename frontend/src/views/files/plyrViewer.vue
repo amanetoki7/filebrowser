@@ -4,7 +4,7 @@
     <div
       v-if="previewType === 'audio'"
       ref="audioPlayerGestureRoot"
-      class="audio-player-container audio-player-container--plyr-gestures fluent-audio-player"
+      class="audio-player-container audio-player-container--plyr-gestures fluent-audio-player fluent-media-player"
       :style="fluentVolumeStyle"
       :class="{ 'audio-player-container--lyrics-open': isMobile && showMobileLyrics && lyrics.length }"
     >
@@ -140,7 +140,8 @@
     <div
       v-else-if="previewType === 'video'"
       ref="videoPlayerContainer"
-      class="video-player-container"
+      class="video-player-container fluent-video-player fluent-media-player"
+      :style="fluentVolumeStyle"
       :class="{ 'no-captions': !hasSubtitles }"
     >
       <div class="plyr-video-container" ref="plyrVideoContainer">
@@ -152,11 +153,28 @@
           :poster="posterUrl"
           :autoplay="videoElementAutoplay"
           @play="handlePlay"
+          @volumechange="syncFluentVolume" @timeupdate="syncFluentTime" @loadedmetadata="syncFluentTime" @durationchange="syncFluentTime" @seeked="syncFluentTime" @emptied="syncFluentTime"
           playsinline
         >
           <track kind="captions" v-for="(sub, index) in subtitlesList" :key="index" :src="sub.src"
             :label="sub.name || subtitleTrackLabel(sub)" :srclang="sub.srclang || sub.language" />
         </video>
+      </div>
+      <div class="audio-controls-container fluent-video-chrome">
+        <span class="fluent-time fluent-time-current" aria-label="再生時間">{{ formatFluentTime(fluentCurrentTime) }}</span>
+        <span class="fluent-time fluent-time-duration" aria-label="合計時間">{{ formatFluentTime(fluentDuration) }}</span>
+        <div class="fluent-track-title" :title="req.name">
+          <strong>{{ req.name }}</strong>
+        </div>
+        <div class="fluent-transport">
+          <button type="button" aria-label="シャッフル" :title="playbackMode === 'shuffle' ? 'シャッフル有効' : 'シャッフル無効'" :aria-pressed="playbackMode === 'shuffle'" @click.stop="toggleFluentShuffle"><FluentPlayerIcon :name="fluentShuffleIcon" /></button>
+          <button type="button" aria-label="前のファイル" title="前のファイル" :disabled="!fluentPreviousAvailable" @click.stop="$emit('navigate-previous')"><FluentPlayerIcon name="previous" /></button>
+          <button type="button" aria-label="10秒戻す" title="10秒戻す" @click.stop="player?.rewind(10)" class="fluent-seek"><FluentPlayerIcon name="seek_back_10" /></button>
+          <span class="fluent-play-slot" aria-hidden="true"></span>
+          <button type="button" aria-label="30秒進む" title="30秒進む" @click.stop="player?.forward(30)" class="fluent-seek"><FluentPlayerIcon name="seek_forward_30" /></button>
+          <button type="button" aria-label="次のファイル" title="次のファイル" :disabled="!fluentNextAvailable" @click.stop="$emit('navigate-next')"><FluentPlayerIcon name="next" /></button>
+          <button type="button" aria-label="リピート" :title="loop === 'single' ? '1曲リピート' : loop === 'all' ? '全曲リピート' : 'リピートなし'" :aria-pressed="loop !== 'off'" @click.stop="toggleFluentLoop"><FluentPlayerIcon :name="fluentLoopIcon" /></button>
+        </div>
       </div>
       <div
         v-if="videoPlaybackLoading"
@@ -853,7 +871,7 @@ export default {
         },
         disableContextMenu: true,
         seekTime: 10,
-        hideControls: true,
+        hideControls: false,
         keyboard: { focused: true, global: true },
         tooltips: { controls: true, seek: !this.scrubPreviewEnabled },
         loop: { active: false },
@@ -871,7 +889,7 @@ export default {
           iosNative: true,
           container: '.plyr-viewer',
         },
-        iconUrl: `${globalVars.baseURL}public/static/img/${this.previewType === 'audio' ? 'fluent-plyr.svg' : 'plyr.svg'}`,
+        iconUrl: `${globalVars.baseURL}public/static/img/fluent-plyr.svg`,
         // Blob/async tracks need addtrack → captions.update; otherwise meta never fills and toggle CC throws (track undefined).
         // Do not call toggleCaptions() here — Plyr already applies `plyr` localStorage for captions on/off.
         captions: {
@@ -940,7 +958,7 @@ export default {
       }, { capture: true, passive: false });
     },
     syncFluentVolume(event) {
-      const media = event?.target || this.$refs.audioElement;
+      const media = event?.target || this.$refs.videoElement || this.$refs.audioElement;
       this.fluentVolume = Number.isFinite(media?.volume) ? media.volume : 1;
       this.fluentMuted = !!media?.muted;
     },
@@ -951,7 +969,7 @@ export default {
     },
     syncFluentTime(event) {
       this.syncFluentVolume(event);
-      const media = event?.target || this.$refs.audioElement;
+      const media = event?.target || this.$refs.videoElement || this.$refs.audioElement;
       this.fluentCurrentTime = Number.isFinite(media?.currentTime) ? media.currentTime : 0;
       this.fluentDuration = Number.isFinite(media?.duration) ? media.duration : 0;
     },
@@ -1543,7 +1561,7 @@ export default {
       await this.reconcilePipSessionOnMount();
       if (this.plyrTeardownDone || !this.mediaElement) return;
       this.player = new Plyr(this.mediaElement, this.plyrOptions);
-      if (this.previewType === 'audio') this.setupFluentVolumeStep();
+      this.setupFluentVolumeStep();
       if (this.previewType === 'video' && !this.shouldAttachVideoStream) {
         this.nativePlayerPlay = this.player.play.bind(this.player);
         this.player.play = () => {
