@@ -2,3 +2,6 @@ Microsoft Fluent UI System Icons
 https://github.com/microsoft/fluentui-system-icons
 Commit: 6c2c9075cf8952ef48369b2475233b6e9761efed
 License: MIT
+Catalogue: https://fluenticons.co/
+Future icon changes must follow this catalogue. Playback transport play, pause, previous and next use the 24px Filled variants.
+User-supplied SVGs remain authoritative when explicitly provided.
