@@ -445,6 +445,31 @@ func generateOfficeId(realPath string) string {
 // and optionally extracts duration using the ffmpeg service with concurrency control
 // If ffmpegService is nil, a new service will be created (for backward compatibility)
 func extractAudioMetadata(ctx context.Context, item *iteminfo.ExtendedItemInfo, realPath string, getArt bool, getDuration bool, ffmpegService *ffmpeg.FFmpegService) error {
+	// Tag readers do not support every container. Duration must be independent of
+	// tag parsing and its memory/size limits (e.g. tagless MP3 and PCM WAV).
+	tagsErr := extractAudioTags(item, realPath, getArt)
+	if !getDuration {
+		return tagsErr
+	}
+	service := ffmpegService
+	if service == nil {
+		service = ffmpeg.Get()
+	}
+	if service == nil {
+		return tagsErr
+	}
+	duration, err := service.GetMediaDuration(ctx, realPath)
+	if err == nil && duration > 0 {
+		if item.Metadata == nil {
+			item.Metadata = &iteminfo.MediaMetadata{}
+		}
+		item.Metadata.Duration = max(1, int(duration))
+		return nil
+	}
+	return tagsErr
+}
+
+func extractAudioTags(item *iteminfo.ExtendedItemInfo, realPath string, getArt bool) error {
 	file, err := os.Open(realPath)
 	if err != nil {
 		return err
@@ -482,20 +507,6 @@ func extractAudioMetadata(ctx context.Context, item *iteminfo.ExtendedItemInfo, 
 
 	// Check if lyrics are available without extract them
 	item.Metadata.HasLyrics = hasLyricsSidecar(realPath) || m.Lyrics() != ""
-
-	// Extract duration ONLY if explicitly requested using the ffmpeg VideoService
-	// This respects concurrency limits and gracefully handles missing ffmpeg
-	if getDuration {
-		service := ffmpegService
-		if service == nil {
-			service = ffmpeg.Get()
-		}
-		if service != nil {
-			if duration, err := service.GetMediaDuration(ctx, realPath); err == nil {
-				item.Metadata.Duration = int(duration)
-			}
-		}
-	}
 
 	if !getArt {
 		return nil
@@ -619,14 +630,19 @@ func extractVideoMetadata(ctx context.Context, item *iteminfo.ExtendedItemInfo, 
 			return err
 		}
 		if duration > 0 {
-			item.Metadata = &iteminfo.MediaMetadata{Duration: int(duration)}
+			item.Metadata = &iteminfo.MediaMetadata{Duration: max(1, int(duration))}
 		}
 		return nil
 	}
 
+	if info.Duration <= 0 {
+		if duration, durationErr := service.GetMediaDuration(ctx, realPath); durationErr == nil {
+			info.Duration = duration
+		}
+	}
 	meta := &iteminfo.MediaMetadata{}
 	if info.Duration > 0 {
-		meta.Duration = int(info.Duration)
+		meta.Duration = max(1, int(info.Duration))
 	}
 	if info.VideoCodec != "" {
 		meta.VideoCodec = info.VideoCodec

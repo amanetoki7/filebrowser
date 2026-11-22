@@ -3,6 +3,7 @@ package ffmpeg
 import (
 	"context"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -96,16 +97,28 @@ func (s *Service) GetMediaDuration(ctx context.Context, mediaPath string) (float
 	if err != nil {
 		return 0, err
 	}
-	cacheKey := fmt.Sprintf("%s:%d", localPath, fileInfo.ModTime().Unix())
-	if duration, found := MetadataCache.Get(cacheKey); found {
+	cacheKey := fmt.Sprintf("duration-v2:%s:%d:%d", localPath, fileInfo.ModTime().UnixNano(), fileInfo.Size())
+	if duration, found := MetadataCache.Get(cacheKey); found && validMediaDuration(duration) {
 		return duration, nil
 	}
 
-	duration, err := s.inner.GetMediaDuration(ctx, localPath)
-	if err != nil {
-		return 0, err
+	primaryCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	duration, err := s.inner.GetMediaDuration(primaryCtx, localPath)
+	cancel()
+	if err != nil || !validMediaDuration(duration) {
+		if ctx.Err() != nil {
+			return 0, ctx.Err()
+		}
+		duration, err = s.fallbackMediaDuration(ctx, localPath)
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	MetadataCache.Set(cacheKey, duration)
 	return duration, nil
+}
+
+func validMediaDuration(duration float64) bool {
+	return duration > 0 && !math.IsNaN(duration) && !math.IsInf(duration, 0)
 }
