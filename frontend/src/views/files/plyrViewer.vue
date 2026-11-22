@@ -915,6 +915,30 @@ export default {
     window.removeEventListener('pagehide', this.pagehideHandler);
   },
   methods: {
+    setupFluentVolumeStep() {
+      const input = this.player?.elements?.inputs?.volume;
+      if (!input) return;
+      input.step = '0.01';
+      const adjust = delta => {
+        if (!this.player) return;
+        const current = this.player.muted ? 0 : Math.round(this.player.volume * 100);
+        const next = Math.max(0, Math.min(100, current + delta));
+        this.player.volume = next / 100;
+        if (next > 0) this.player.muted = false;
+      };
+      input.addEventListener('keydown', event => {
+        if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].includes(event.key)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        adjust(event.key === 'ArrowUp' || event.key === 'ArrowRight' ? 1 : -1);
+      }, true);
+      input.addEventListener('wheel', event => {
+        if (!event.deltaY) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        adjust(event.deltaY < 0 ? 1 : -1);
+      }, { capture: true, passive: false });
+    },
     syncFluentVolume(event) {
       const media = event?.target || this.$refs.audioElement;
       this.fluentVolume = Number.isFinite(media?.volume) ? media.volume : 1;
@@ -1519,6 +1543,7 @@ export default {
       await this.reconcilePipSessionOnMount();
       if (this.plyrTeardownDone || !this.mediaElement) return;
       this.player = new Plyr(this.mediaElement, this.plyrOptions);
+      if (this.previewType === 'audio') this.setupFluentVolumeStep();
       if (this.previewType === 'video' && !this.shouldAttachVideoStream) {
         this.nativePlayerPlay = this.player.play.bind(this.player);
         this.player.play = () => {
