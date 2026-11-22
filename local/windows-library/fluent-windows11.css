@@ -201,3 +201,15 @@ html.dark-mode #sidebar { --navigation-highlight: #323232; }
   #shelf .explorer-address-row #breadcrumbs ul { padding: 0 4px; }
   #shelf .explorer-address-row #breadcrumbs li + li::before { margin: 0 3px; }
 }
+
+/* Folder icons have no tile, outline, or shadow. */
+#main .image-preview.folder-preview,
+#sidebar .image-preview.folder-preview,
+#sidebar .image-preview.folder-preview.node-icon,
+#sidebar .node-icon:has(.folder-preview),
+#sidebar .node-icon.folder-preview {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
